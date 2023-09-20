@@ -7,6 +7,8 @@ A simulator (emulator) for 6502 and 65C02 processors, for golang
 * Supports breakpoints via callbacks
 * Optional support for illegal instructions (best effort, not recommended)
 
+Code is not currently considered fully released, and may be subject to API changes.
+
 # Usage
 
 ## Step 1. Create a memory implementation
@@ -118,7 +120,7 @@ You can set multiple breakpoint handlers at the same address. They will be execu
 You can clear all breakpoints with the proc.ClearBreakpoints() method
 
 ## Interrupts
-There are three types of hardware interrupt (plus of cause the BRK opcode)
+There are three types of hardware interrupt (plus of course the BRK opcode)
 
 ### IRQ
 IRQs are driven by a (simulated) I/O line. When this line is asserted (technically pulled low), an IRQ will be entered unless the processor I flag is set. The IRQ routine who's address is programmed at the IRQ system vector will be entered and typically ends with an RTI instruction.
@@ -127,7 +129,7 @@ Interrupts will keep occurring until the I/O line goes low (depending of course 
 
 Pull the simulated IRQ line low with proc.IRQ(true), reset it to high with proc.IRQ(false)
 
-Optionally you can proc.SetOption(sim6502.AutoResetIRQ). With this option set, when the IRQ routine is entered, the line will be reset to high (i.e. un-asserted). This is not standard behavior, but is useful for when you just want to trigger an IRQ and don't want to wait for something else before disabling the line again.
+Optionally you can proc.SetOption(sim6502.AutoResetIRQ, true). With this option set, when the IRQ routine is entered, the line will be reset to high (i.e. un-asserted). This is not standard behavior, but is useful for when you just want to trigger an IRQ and don't want to wait for something else before disabling the line again.
 
 Set the IRQ vector with
 ```golang
@@ -139,7 +141,7 @@ NMIs are the same as IRQs, except they are only triggered on a falling edge of t
 
 The proc.NMI(true) call will set the line low (asserted). If it was not already low, this will trigger a single NMI.
 
-As with IRQ, you can use proc.SetOption(sim6502.AutoResetNMI) to have the line auto-reset after the NMI is entered.
+As with IRQ, you can use proc.SetOption(sim6502.AutoResetNMI, true) to have the line auto-reset after the NMI is entered.
 
 Set the NMI vector with
 ```golang
@@ -226,4 +228,4 @@ https://github.com/cjbearman/sim6502test
 ## Known issues
 * Some of the timing of the 85C02 operations may be a little off at the moment, this is being worked on.
 * Illegal instructions are likely pretty spotty.
-
+* Operation of BCD arithmatic with invalid BCD numbers (such as 3e) will not yield the same results as a real processor. In the above example, 3e would be rounded up to 44 prior to being used in the calculation. Since the operation of BCD arithmatic with invalid operands is not defined, this should not be an issue, but if your code depends on some undocumented behaviors in BCD mode, this may cause an issue. I may address this in a future update.
