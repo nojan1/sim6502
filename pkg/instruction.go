@@ -1,5 +1,7 @@
 package sim6502
 
+import "fmt"
+
 type instructionImpl interface {
 	Mnemonic() string
 	// Exec executes the specified instruction
@@ -300,4 +302,11 @@ var instructions = []*instruction{
 	{&sbc{}, ABS_X, 0xFD, 4},
 	{&inc{}, ABS_X, 0xFE, 7},
 	nil,
+}
+
+func loadAdditionalInstruction(instructions []*instruction, opcode uint8, impl instructionImpl, am AddressingMode, cycles uint8) {
+	if instructions[opcode] != nil {
+		panic(fmt.Sprintf("Cannot load new instruction over existing instruction at opcode 0x%02x", opcode))
+	}
+	instructions[opcode] = &instruction{Impl: impl, AddressingMode: am, OpCode: opcode, BaseCycles: cycles}
 }

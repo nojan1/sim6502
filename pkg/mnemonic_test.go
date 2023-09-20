@@ -16,7 +16,7 @@ func TestMnemonics(t *testing.T) {
 	instrs := make([]*instruction, len(instructions))
 	copy(instrs, instructions)
 
-	loadExtendedInstructions(instrs)
+	loadIllegalInstructions(instrs)
 
 	for _, i := range instrs {
 

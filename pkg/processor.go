@@ -29,8 +29,8 @@ const (
 	// TraceInterrupts will cause messages to be printed when external interrupts are triggered
 	TraceInterrupts
 
-	// ErrorOnJAM will cause an error to be generated if an (extended) JAM is enconutered
-	// with the extended instruction set enabled
+	// ErrorOnJAM will cause an error to be generated if an (illegal) JAM is enconutered
+	// with the illegal instruction set enabled
 	// if this is not set, then the processor will just lock up
 	ErrorOnJAM
 
@@ -171,9 +171,9 @@ func (p *Processor) SetModel65C02() *Processor {
 	return p
 }
 
-// LoadExtendedInstructions will provide support for undocumented/unofficial/extended instruction set
-func (p *Processor) LoadExtendedInstructions() *Processor {
-	loadExtendedInstructions(p.instructions)
+// LoadIllegalInstructions will provide support for undocumented/unofficial/illegal instruction set
+func (p *Processor) LoadIllegalInstructions() *Processor {
+	loadIllegalInstructions(p.instructions)
 	return p
 }
 
