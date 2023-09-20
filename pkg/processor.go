@@ -41,6 +41,11 @@ const (
 	// AutoRsetNMI will cause the NMI line to be forcefully unasserted when the NMI
 	// branch is taken
 	AutoResetNMI
+
+	// Fix6502BrokenJMP will fix the incorrect behavior of indirect JUMP on 6502 (not 65C02 which is not broken)
+	// The (implemented) broken behavior is to jump to the address stored at xxff (L), xx00 (H) instead of
+	// xxff (L), xx+100 (H)
+	Fix6052BrokenJMP
 )
 
 // ProcessorModel allows for different processor models and their associated behaviors
@@ -86,6 +91,7 @@ type Processor struct {
 	irq                      bool                           // when set true, IRQ line is asserted
 	autoResetIRQ             bool                           // Allows for auto-reset of IRQ line
 	reset                    bool                           // when set true, RST line is asserted
+	fixBrokenJMP             bool                           // Fixes incorrect JMP behavior on NMOS 6502
 	wait                     *waiter                        // Used to manage WAI (65C02) instruction
 	debugWriter              io.Writer                      // For outputting debug information
 }
@@ -237,6 +243,8 @@ func (p *Processor) SetOption(opt ProcessorOption, value bool) *Processor {
 		p.autoResetIRQ = value
 	case AutoResetNMI:
 		p.autoResetNMI = value
+	case Fix6052BrokenJMP:
+		p.fixBrokenJMP = value
 	default:
 		panic(fmt.Sprintf("undefined processor option:%d", opt))
 	}
