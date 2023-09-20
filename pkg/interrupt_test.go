@@ -112,7 +112,7 @@ func TestNMI(t *testing.T) {
 	go proc.RunFrom(0x1000)
 	time.Sleep(100 * time.Millisecond)
 	for i := 1; i <= 5; i++ {
-		assert.Nil(proc.NMI(true))
+		proc.NMI(true)
 		time.Sleep(100 * time.Millisecond)
 	}
 
@@ -138,7 +138,7 @@ func TestNMIWithMasking(t *testing.T) {
 	go proc.RunFrom(0x1000)
 	time.Sleep(100 * time.Millisecond)
 	for i := 1; i <= 5; i++ {
-		assert.Nil(proc.NMI(true))
+		proc.NMI(true)
 		time.Sleep(100 * time.Millisecond)
 	}
 
@@ -205,7 +205,7 @@ func TestNMIExitsWAI(t *testing.T) {
 	require.True(proc.wait.isWaiting())
 
 	// Trigger an interrupt, this should break the wait
-	assert.Nil(proc.NMI(true))
+	proc.NMI(true)
 
 	// Allow things to take their course
 	time.Sleep(200 * time.Millisecond)
