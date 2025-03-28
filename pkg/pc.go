@@ -7,11 +7,11 @@ type ProgramCounter struct {
 
 func (pc *ProgramCounter) Init(p *Processor) {
 	pc.processor = p
-	pc.ptr = uint16(p.memory.Read(uint16(VectorReset))) | (uint16(p.memory.Read(uint16(VectorReset+1))) << 8)
+	pc.ptr = uint16(p.memory.Read(uint16(VectorReset), false)) | (uint16(p.memory.Read(uint16(VectorReset+1), false)) << 8)
 }
 
 func (pc *ProgramCounter) Next() uint8 {
-	next := pc.processor.memory.Read(pc.ptr)
+	next := pc.processor.memory.Read(pc.ptr, false)
 	pc.ptr++
 	return next
 }

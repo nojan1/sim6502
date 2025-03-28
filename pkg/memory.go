@@ -3,8 +3,8 @@ package sim6502
 // Memory is the interface that must be implemented by any memory provider
 // The memory provider should implement the entire 64K address space as it sees fit
 type Memory interface {
-	// Read reads a byte from the specified address
-	Read(addr uint16) uint8
+	// Read reads a byte from the specified address, if internal is set this read is done by the 
+	Read(addr uint16, internal bool) uint8
 
 	// Write writes a byte to the specified address
 	Write(addr uint16, value uint8)

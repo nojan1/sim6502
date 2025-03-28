@@ -14,15 +14,15 @@ func (i *jmp) Exec(proc *Processor, mode AddressingMode, data uint8, data16 uint
 	if !proc.fixBrokenJMP && mode == IND && proc.model == ProcessorModel6502 {
 		// Grab the two operands again
 		// low, high bytes of indirect address
-		lowind := proc.memory.Read(proc.registers.PC.Current() - 2)
-		highind := proc.memory.Read(proc.registers.PC.Current() - 1)
+		lowind := proc.memory.Read(proc.registers.PC.Current() - 2, false)
+		highind := proc.memory.Read(proc.registers.PC.Current() - 1, false)
 
 		if lowind == 0xff {
 			// Breakage mode is when the low byte of the indirect address is 0xff
 			// This is the indirect address
 			ind := uint16(highind)<<8 | uint16(lowind)
-			lowaddr := proc.memory.Read(ind)
-			highaddr := proc.memory.Read(ind & 0xff00) // instead of ind+1
+			lowaddr := proc.memory.Read(ind, false)
+			highaddr := proc.memory.Read(ind & 0xff00, false) // instead of ind+1
 			proc.registers.PC.Set(uint16(highaddr)<<8 | uint16(lowaddr))
 			return nil
 		}

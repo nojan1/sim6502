@@ -16,7 +16,7 @@ const (
 
 // GetVector will return the memory address in the specified vector
 func GetVector(mem Memory, vector SystemVector) uint16 {
-	return uint16(mem.Read(uint16(vector))) | (uint16(mem.Read(uint16(vector+1))) << 8)
+	return uint16(mem.Read(uint16(vector), true)) | (uint16(mem.Read(uint16(vector+1), true)) << 8)
 }
 
 func SetVector(mem Memory, vector SystemVector, addr uint16) {

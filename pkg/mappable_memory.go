@@ -29,7 +29,7 @@ type MappedMemoryWriteHandler interface {
 type MappedMemoryReadHandler interface {
 	MappedMemoryHandler
 	// Read is called when the CPU reads the specified
-	Read(addr uint16) uint8
+	Read(addr uint16, internal bool) uint8
 }
 
 // MappableMemory is a raw 64K address space in which you may map additional handlers
@@ -104,10 +104,10 @@ func (m *MappableMemory) Write(location uint16, value uint8) {
 }
 
 // Read memory
-func (m *MappableMemory) Read(location uint16) uint8 {
+func (m *MappableMemory) Read(location uint16, internal bool) uint8 {
 	// Is this memory mapped for input
 	if ih, ok := m.device[location].(MappedMemoryReadHandler); ok {
-		val := ih.Read(location)
+		val := ih.Read(location, internal)
 		if m.debugReads {
 			fmt.Fprintf(m.debugReadsWriter, "Memory Read  (Mapped: %s): $%02x <- $%04x\n", reflect.TypeOf(ih).Name(), val, location)
 		}

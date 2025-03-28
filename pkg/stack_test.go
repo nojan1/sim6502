@@ -20,7 +20,7 @@ func TestStackNominalOperation(t *testing.T) {
 	// Checks that the values are in the proper stack locations
 	for i := 0xff; i >= 0; i-- {
 		expected := 0xff - i
-		assert.EqualValues(expected, proc.memory.Read(StackLocation+uint16(i)))
+		assert.EqualValues(expected, proc.memory.Read(StackLocation+uint16(i), true))
 	}
 
 	// Pops them off and validates them

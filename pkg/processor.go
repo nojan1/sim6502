@@ -456,7 +456,7 @@ func (p *Processor) DumpState(w io.Writer) {
 
 // setPCFromResetVector will set the program counter to the value of the reset vector
 func (p *Processor) setPCFromResetVector() {
-	p.registers.PC.Set(uint16(p.memory.Read(uint16(VectorReset))) | (uint16(p.memory.Read(uint16(VectorReset+1))) << 8))
+	p.registers.PC.Set(uint16(p.memory.Read(uint16(VectorReset), false)) | (uint16(p.memory.Read(uint16(VectorReset+1), false)) << 8))
 }
 
 // Step executes a single instruction, returning any error that may occur
@@ -525,7 +525,7 @@ func (p *Processor) Step() (err error, stop bool) {
 		oper1 = p.registers.PC.Next()
 		oper2 = p.registers.PC.Next()
 		addr = uint16(oper1) | (uint16(oper2) << 8)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// ABSOLUTE_X MODE
 	case ABS_X:
@@ -535,7 +535,7 @@ func (p *Processor) Step() (err error, stop bool) {
 		baseAddr := (uint16(oper1) | (uint16(oper2) << 8))
 		addr = baseAddr + uint16(p.registers.X)
 		xPageBoundary = !samePage(baseAddr, addr)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// ABSOLUTE_Y_MODE
 	case ABS_Y:
@@ -545,28 +545,28 @@ func (p *Processor) Step() (err error, stop bool) {
 		baseAddr := (uint16(oper1) | (uint16(oper2) << 8))
 		addr = baseAddr + uint16(p.registers.Y)
 		xPageBoundary = !samePage(baseAddr, addr)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// ZEROPAGE mode
 	case ZPG:
 		// The data is in the memory cell referenced by the next operand (LL) as $00LL
 		oper1 = p.registers.PC.Next()
 		addr = uint16(oper1)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// ZEROPAGE_X mode
 	case ZPG_X:
 		// The data is in the memory cell referenced by the next operand (LL) as $00(LL+X)
 		oper1 = p.registers.PC.Next()
 		addr = uint16(oper1 + p.registers.X)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// ZEROPAGE_Y mode
 	case ZPG_Y:
 		// The data is in the memory cell referenced by the next operand (LL) as $00(LL+Y)
 		oper1 = p.registers.PC.Next()
 		addr = uint16(oper1 + p.registers.Y)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// INDIRECT mode
 	case IND:
@@ -575,8 +575,8 @@ func (p *Processor) Step() (err error, stop bool) {
 		oper1 = p.registers.PC.Next()
 		oper2 = p.registers.PC.Next()
 		ind := uint16(oper1) | (uint16(oper2) << 8)                             // The address of the target address
-		addr = uint16(p.memory.Read(ind)) | (uint16(p.memory.Read(ind+1)) << 8) // The actual address
-		data = p.memory.Read(addr)
+		addr = uint16(p.memory.Read(ind, false)) | (uint16(p.memory.Read(ind+1, false)) << 8) // The actual address
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// INDIRECT_X mode
 	case X_IND:
@@ -584,8 +584,8 @@ func (p *Processor) Step() (err error, stop bool) {
 		// as $(HHLL+X)
 		oper1 = p.registers.PC.Next()
 		indaddr := uint16(oper1 + p.registers.X)
-		addr = uint16(p.memory.Read(indaddr)) | (uint16(p.memory.Read(indaddr+1)) << 8)
-		data = p.memory.Read(addr)
+		addr = uint16(p.memory.Read(indaddr, false)) | (uint16(p.memory.Read(indaddr+1, false)) << 8)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// INDIRECT_Y mode
 	case IND_Y:
@@ -593,10 +593,10 @@ func (p *Processor) Step() (err error, stop bool) {
 		// as $(HHLL+Y)
 		oper1 = p.registers.PC.Next()
 		indaddr := uint16(oper1) // zpg address
-		baseAddr := uint16(p.memory.Read(indaddr)) | (uint16(p.memory.Read(indaddr+1)) << 8)
+		baseAddr := uint16(p.memory.Read(indaddr, false)) | (uint16(p.memory.Read(indaddr+1, false)) << 8)
 		addr = baseAddr + uint16(p.registers.Y)
 		xPageBoundary = !samePage(baseAddr, addr)
-		data = p.memory.Read(addr)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// RELATIVE mode
 	case REL:
@@ -614,7 +614,7 @@ func (p *Processor) Step() (err error, stop bool) {
 	// 65C02 Zero page relative mode
 	case ZPG_REL:
 		oper1 = p.registers.PC.Next()
-		data = p.memory.Read(uint16(oper1))
+		data = p.memory.Read(uint16(oper1), false)
 		offset := p.registers.PC.Next()
 		oper2 = offset
 		addr = p.registers.PC.Current()
@@ -630,15 +630,15 @@ func (p *Processor) Step() (err error, stop bool) {
 		oper2 = p.registers.PC.Next()
 		indaddr := uint16(oper1) | (uint16(oper2) << 8)
 		indaddr += uint16(p.registers.X)
-		addr = uint16(p.memory.Read(indaddr)) | (uint16(p.memory.Read(indaddr+1)) << 8)
-		data = p.memory.Read(addr)
+		addr = uint16(p.memory.Read(indaddr, false)) | (uint16(p.memory.Read(indaddr+1, false)) << 8)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	// 65C02 indirect zeropage
 	case ZPG_IND:
 		oper1 = p.registers.PC.Next()
 		indaddr := uint16(oper1)
-		addr = uint16(p.memory.Read(indaddr)) | (uint16(p.memory.Read(indaddr+1)) << 8)
-		data = p.memory.Read(addr)
+		addr = uint16(p.memory.Read(indaddr, false)) | (uint16(p.memory.Read(indaddr+1, false)) << 8)
+		data = p.memory.Read(addr, !instruction.ReadsFromMemory)
 
 	default:
 		// Should never happen

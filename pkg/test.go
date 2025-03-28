@@ -36,8 +36,8 @@ func prepareInstructionImmediate(t *testing.T, instructions []*instruction, mnem
 
 	// Set up the reset vector to point at where we're going to store our code
 	setWord(proc, uint16(VectorReset), testCodeOffset)
-	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset)), "PCL not properly set")
-	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1)), "PCH not properly set")
+	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset), true), "PCL not properly set")
+	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1), true), "PCH not properly set")
 
 	// Store our code at the desginated location
 	proc.memory.Write(testCodeOffset, instruction.OpCode)
@@ -59,8 +59,8 @@ func prepareInstructionRelative(t *testing.T, instructions []*instruction, mnemo
 
 	// Set up the reset vector to point at where we're going to store our code
 	setWord(proc, uint16(VectorReset), testCodeOffset)
-	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset)), "PCL not properly set")
-	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1)), "PCH not properly set")
+	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset), true), "PCL not properly set")
+	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1), true), "PCH not properly set")
 
 	// Store our code at the desginated location
 	proc.memory.Write(testCodeOffset, instruction.OpCode)
@@ -82,8 +82,8 @@ func prepareInstructionAcc(t *testing.T, instructions []*instruction, mnemonic s
 
 	// Set up the reset vector to point at where we're going to store our code
 	setWord(proc, uint16(VectorReset), testCodeOffset)
-	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset)), "PCL not properly set")
-	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1)), "PCH not properly set")
+	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset), true), "PCL not properly set")
+	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1), true), "PCH not properly set")
 
 	// Store our code at the desginated location
 	proc.memory.Write(testCodeOffset, instruction.OpCode)
@@ -104,8 +104,8 @@ func prepareInstructionImplied(t *testing.T, instructions []*instruction, mnemon
 
 	// Set up the reset vector to point at where we're going to store our code
 	setWord(proc, uint16(VectorReset), testCodeOffset)
-	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset)), "PCL not properly set")
-	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1)), "PCH not properly set")
+	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset), true), "PCL not properly set")
+	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1), true), "PCH not properly set")
 
 	// Store our code at the desginated location
 	proc.memory.Write(testCodeOffset, instruction.OpCode)
@@ -126,8 +126,8 @@ func prepareInstructionAbsolute(t *testing.T, instructions []*instruction, mnemo
 
 	// Set up the reset vector to point at where we're going to store our code
 	setWord(proc, uint16(VectorReset), testCodeOffset)
-	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset)), "PCL not properly set")
-	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1)), "PCH not properly set")
+	require.EqualValues(testCodeOffset&0xff, proc.memory.Read(uint16(VectorReset), true), "PCL not properly set")
+	require.EqualValues(testCodeOffset>>8, proc.memory.Read(uint16(VectorReset+1), true), "PCH not properly set")
 
 	// Store our code at the desginated location
 	proc.memory.Write(testCodeOffset, instruction.OpCode)

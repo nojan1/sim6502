@@ -35,7 +35,7 @@ func (sp *StackPointer) Push(value uint8) {
 // Pop pops a byte off the stack
 func (sp *StackPointer) Pop() uint8 {
 	sp.ptr++
-	result := sp.mem.Read(StackLocation + uint16(sp.ptr))
+	result := sp.mem.Read(StackLocation + uint16(sp.ptr), true)
 	if StackDebug {
 		fmt.Printf("Stack DBG: Pop 0x%02x from SP 0x%02x at addr %04x\n", result, sp.ptr, StackLocation+uint16(sp.ptr))
 	}
@@ -54,7 +54,7 @@ func (sp *StackPointer) GetStackPointer() uint8 {
 
 // PeekStackHead returns the byte on the stack head without altering the stack
 func (sp *StackPointer) PeekStackHead() uint8 {
-	return sp.mem.Read(StackLocation + uint16(sp.ptr+1))
+	return sp.mem.Read(StackLocation + uint16(sp.ptr+1), true)
 }
 
 // String provides a string dump of the stack
@@ -65,7 +65,7 @@ func (sp *StackPointer) String() string {
 
 	for i := sp.ptr + 1; i != 0; i++ {
 		sb.WriteString(sep)
-		sb.WriteString(fmt.Sprintf("%02x", sp.mem.Read(StackLocation+uint16(i))))
+		sb.WriteString(fmt.Sprintf("%02x", sp.mem.Read(StackLocation+uint16(i), true)))
 		sep = ", "
 	}
 	sb.WriteRune(']')

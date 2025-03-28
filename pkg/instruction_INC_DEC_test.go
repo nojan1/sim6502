@@ -36,7 +36,7 @@ func TestIncDec(t *testing.T) {
 			err, _ := proc.Step()
 			require.Nil(err, fmt.Sprintf("error on step: %v", err))
 
-			val := proc.memory.Read(0x1234)
+			val := proc.memory.Read(0x1234, true)
 
 			assert.Equal(test.expectedValue, val)
 

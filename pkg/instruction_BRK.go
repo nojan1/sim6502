@@ -23,6 +23,6 @@ func (i *brk) Exec(proc *Processor, mode AddressingMode, data uint8, data16 uint
 	}
 
 	proc.registers.SR.Set(SRFlagI) // Set interrupt flag
-	proc.registers.PC.Set(uint16(proc.memory.Read(uint16(VectorIRQ))) | (uint16(proc.memory.Read(uint16(VectorIRQ+1))) << 8))
+	proc.registers.PC.Set(uint16(proc.memory.Read(uint16(VectorIRQ), false)) | (uint16(proc.memory.Read(uint16(VectorIRQ+1), false)) << 8))
 	return nil
 }

@@ -52,7 +52,7 @@ func (m *RawMemory) Write(location uint16, value uint8) {
 }
 
 // Read a memory location
-func (m *RawMemory) Read(location uint16) uint8 {
+func (m *RawMemory) Read(location uint16, internal bool) uint8 {
 	if m.debugReads {
 		fmt.Fprintf(m.debugReadsWriter, "Memory Read  (Raw): $%02x <- $%04x\n", m.data[location], location)
 	}

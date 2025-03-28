@@ -15,7 +15,7 @@ func TestSimpleMemory(t *testing.T) {
 
 	for i := 0; i < 65536; i++ {
 		mem.Write(uint16(i), uint8(i&0xff))
-		assert.Equal(uint8(i&0xff), mem.Read(uint16(i)), fmt.Sprintf("at mem location 0x%04x", i))
+		assert.Equal(uint8(i&0xff), mem.Read(uint16(i), true), fmt.Sprintf("at mem location 0x%04x", i))
 	}
 }
 
@@ -33,7 +33,7 @@ func (m *MemoryMapTester) Write(addr uint16, val uint8) {
 	m.calledWrites++
 }
 
-func (m *MemoryMapTester) Read(addr uint16) uint8 {
+func (m *MemoryMapTester) Read(addr uint16, internal bool) uint8 {
 	m.calledReads++
 	return m.val
 }
@@ -46,12 +46,12 @@ func TestMappedMemory(t *testing.T) {
 	mapper := &MemoryMapTester{}
 	mem.Map(mapper)
 
-	require.EqualValues(mem.Read(0x5000), 0)
+	require.EqualValues(mem.Read(0x5000, true), 0)
 
 	mem.Write(0x5000, 55)
-	assert.EqualValues(55, mem.Read(0x5000))
+	assert.EqualValues(55, mem.Read(0x5000, true))
 
-	mem.Read(0x5001)
+	mem.Read(0x5001, true)
 	mem.Write(0x5001, 99)
 
 	assert.Equal(2, mapper.calledReads)
